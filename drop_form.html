@@ -1,0 +1,14 @@
+<head>
+	<meta charset="UTF-8">
+	<title>DropSite</title>
+</head>
+<body>
+	<h2>Upload items:</h2>
+	<p>Your session ID is: {{.SID}}</p>
+	<form action="drop" method="POST" enctype="multipart/form-data">
+		<label for="drop_items">Drop Items:</label>
+		<input type="file" name="drops" id="drop_items" multiple><br>
+		<button type="submit" value="upload">Upload</button>
+	</form>
+</body>
+
