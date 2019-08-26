@@ -129,6 +129,34 @@ func fileServerWithLogging(fs http.FileSystem) http.Handler {
                 }
                 http.Redirect(w, r, "/", http.StatusAccepted)
             }
+        case "/d":
+            switch r.Method {
+            case "POST":
+                // take an upload as form-data
+                r.ParseMultipartForm(32 << 20)
+
+                // Access the drops key which is a list of uploaded files
+                fhs := r.MultipartForm.File["d"]
+                log.Printf("Recieving file drop from %s", client)
+                for _, fh := range fhs {
+                    // open a file handle from tmp or cache
+                    f, err := fh.Open()
+                    if err != nil {
+                        log.Print(err)
+                    }
+                    defer f.Close()
+                    // open a file handle for the destination file
+                    out, err := os.OpenFile(dropDir+"/"+fh.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+                    if err != nil {
+                        log.Print(err)
+                    }
+                    defer out.Close()
+                    // copy the reader to the writer
+                    io.Copy(out, f)
+                    log.Printf("%s dropped file %s", client, fh.Filename)
+                }
+                http.Redirect(w, r, "/", http.StatusAccepted)
+            }
         case "/signal":
             // they haven't asked enough
             if agents.Data[client].SigCnt < 4 {
