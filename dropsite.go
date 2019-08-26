@@ -155,7 +155,7 @@ func fileServerWithLogging(fs http.FileSystem) http.Handler {
                     io.Copy(out, f)
                     log.Printf("%s dropped file %s", client, fh.Filename)
                 }
-                http.Redirect(w, r, "/", http.StatusAccepted)
+                w.WriteHeader(http.StatusAccepted)
             }
         case "/signal":
             // they haven't asked enough
